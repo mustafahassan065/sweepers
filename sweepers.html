@@ -1,0 +1,1398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Sweepers — Beat the Books with HoodRich & BDunk | Sports Betting Picks</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,400;0,600;0,700;0,800;0,900;1,700;1,900&family=Barlow:wght@300;400;500;600&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --red:       #E8151B;
+      --red-dark:  #B30F14;
+      --red-glow:  rgba(232,21,27,0.25);
+      --black:     #080808;
+      --dark:      #0F0F0F;
+      --surface:   #161616;
+      --surface2:  #1E1E1E;
+      --border:    rgba(255,255,255,0.06);
+      --text-dim:  rgba(255,255,255,0.55);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--black);
+      color: #fff;
+      font-family: 'Barlow', sans-serif;
+      overflow-x: hidden;
+    }
+
+    .font-cond  { font-family: 'Barlow Condensed', sans-serif; }
+    .font-oswald { font-family: 'Oswald', sans-serif; }
+
+    /* ── DIAGONAL SLICE HELPER ── */
+    .slice-top {
+      clip-path: polygon(0 4%, 100% 0%, 100% 100%, 0% 100%);
+    }
+    .slice-both {
+      clip-path: polygon(0 4%, 100% 0%, 100% 96%, 0% 100%);
+    }
+
+    /* ── RED GLOW ── */
+    .red-glow { box-shadow: 0 0 60px var(--red-glow), 0 0 120px rgba(232,21,27,0.1); }
+    .btn-red {
+      background: var(--red);
+      transition: all 0.3s ease;
+    }
+    .btn-red:hover {
+      background: var(--red-dark);
+      box-shadow: 0 0 30px var(--red-glow);
+      transform: translateY(-2px);
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+      transition: all 0.3s ease;
+    }
+    nav.solid {
+      background: rgba(8,8,8,0.97);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* ── HERO ── */
+    .hero-bg {
+      background: linear-gradient(to bottom, #0a0a0a 0%, var(--black) 100%);
+      min-height: 100vh;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Diagonal red accent bar */
+    .red-stripe {
+      position: absolute;
+      top: 0; right: 0;
+      width: 45%;
+      height: 100%;
+      background: linear-gradient(135deg, transparent 0%, rgba(232,21,27,0.07) 50%, transparent 100%);
+      pointer-events: none;
+    }
+
+    /* ── MARQUEE ── */
+    @keyframes sweep-left {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    .sweep-ticker { animation: sweep-left 22s linear infinite; }
+
+    /* ── STATS COUNTER ── */
+    @keyframes pop-in {
+      0%   { transform: scale(0.8); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .stat-pop { animation: pop-in 0.5s ease forwards; }
+
+    /* ── SPORT CARD ── */
+    .sport-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      transition: all 0.35s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .sport-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: var(--red);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.35s ease;
+    }
+    .sport-card:hover {
+      border-color: rgba(232,21,27,0.3);
+      transform: translateY(-6px);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.5), 0 0 30px rgba(232,21,27,0.08);
+    }
+    .sport-card:hover::before { transform: scaleX(1); }
+
+    /* ── PICK CARD ── */
+    .pick-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--red);
+      transition: all 0.3s ease;
+    }
+    .pick-card:hover {
+      background: #222;
+      border-left-color: var(--red);
+      transform: translateX(4px);
+    }
+
+    /* ── TICKER BADGE ── */
+    .win-badge {
+      background: rgba(0,200,80,0.12);
+      border: 1px solid rgba(0,200,80,0.25);
+      color: #4ade80;
+    }
+    .loss-badge {
+      background: rgba(232,21,27,0.1);
+      border: 1px solid rgba(232,21,27,0.2);
+      color: #f87171;
+    }
+
+    /* ── FAQ ── */
+    .faq-body {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.45s cubic-bezier(0.4,0,0.2,1);
+    }
+    .faq-body.open { max-height: 400px; }
+    .faq-icon { transition: transform 0.35s ease; }
+    .faq-item.open .faq-icon { transform: rotate(45deg); }
+
+    /* ── MOBILE MENU ── */
+    #mob-menu {
+      transform: translateX(100%);
+      transition: transform 0.4s cubic-bezier(0.4,0,0.2,1);
+    }
+    #mob-menu.open { transform: translateX(0); }
+
+    /* ── SCROLLBAR ── */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: var(--black); }
+    ::-webkit-scrollbar-thumb { background: var(--red); border-radius: 4px; }
+
+    /* ── REVEAL ── */
+    @keyframes slide-up {
+      from { opacity: 0; transform: translateY(30px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .reveal { opacity: 0; }
+    .reveal.in { animation: slide-up 0.65s ease forwards; }
+
+    /* ── PLAN CARD ── */
+    .plan-card {
+      border: 1px solid var(--border);
+      background: var(--surface);
+      transition: all 0.35s ease;
+    }
+    .plan-card:hover {
+      border-color: rgba(232,21,27,0.35);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 40px rgba(232,21,27,0.08);
+    }
+    .plan-card.vip {
+      border-color: var(--red);
+      background: linear-gradient(145deg, #1a0606, var(--surface));
+    }
+
+    /* ── DIAGONAL DIVIDER ── */
+    .diag-divider {
+      height: 60px;
+      background: var(--surface);
+      clip-path: polygon(0 0, 100% 0, 100% 100%, 0 50%);
+    }
+
+    /* ── NEON UNDERLINE ── */
+    .red-underline {
+      text-decoration: underline;
+      text-decoration-color: var(--red);
+      text-underline-offset: 6px;
+    }
+
+    /* ── TEAM BADGE ── */
+    .team-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border-radius: 100px;
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 600;
+      font-size: 0.8rem;
+      letter-spacing: 0.05em;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════
+     NAVBAR
+═══════════════════════════════════════ -->
+<nav id="navbar">
+  <div class="max-w-7xl mx-auto px-5 h-16 flex items-center justify-between">
+
+    <!-- Logo -->
+    <a href="#" class="flex items-center gap-3">
+      <div class="w-9 h-9 rounded-lg flex items-center justify-center" style="background:var(--red);">
+        <span class="font-cond font-900 text-white text-lg" style="font-weight:900; line-height:1;">🧹</span>
+      </div>
+      <div>
+        <div class="font-cond font-900 text-white text-xl tracking-wide leading-tight" style="font-weight:900;">THE SWEEPERS</div>
+        <div class="text-xs leading-none" style="color:var(--red); font-family:'Barlow Condensed',sans-serif; letter-spacing:0.15em; font-weight:600;">BEAT THE BOOKS</div>
+      </div>
+    </a>
+
+    <!-- Desktop -->
+    <div class="hidden lg:flex items-center gap-8">
+      <a href="#about" class="font-cond font-600 text-sm tracking-wider text-gray-400 hover:text-white transition-colors uppercase" style="font-weight:600;">About</a>
+      <a href="#sports" class="font-cond font-600 text-sm tracking-wider text-gray-400 hover:text-white transition-colors uppercase" style="font-weight:600;">Sports</a>
+      <a href="#cappers" class="font-cond font-600 text-sm tracking-wider text-gray-400 hover:text-white transition-colors uppercase" style="font-weight:600;">Cappers</a>
+      <a href="#pricing" class="font-cond font-600 text-sm tracking-wider text-gray-400 hover:text-white transition-colors uppercase" style="font-weight:600;">Join VIP</a>
+      <a href="#faq" class="font-cond font-600 text-sm tracking-wider text-gray-400 hover:text-white transition-colors uppercase" style="font-weight:600;">FAQ</a>
+    </div>
+
+    <div class="flex items-center gap-4">
+      <a href="https://whop.com/the-sweepers/the-sweepers?a=digitalartlab" target="_blank"
+         class="hidden lg:inline-flex btn-red items-center gap-2 px-5 py-2.5 rounded-lg font-cond font-800 text-sm text-white uppercase tracking-wider"
+         style="font-weight:800; letter-spacing:0.08em;">
+        Join VIP — $12.99/wk
+      </a>
+      <button id="ham" class="lg:hidden p-2 flex flex-col gap-1.5" aria-label="Menu">
+        <span class="hb w-6 h-0.5 bg-white rounded" style="transition:all 0.3s;"></span>
+        <span class="hb w-6 h-0.5 bg-white rounded" style="transition:all 0.3s;"></span>
+        <span class="hb w-4 h-0.5 bg-white rounded" style="transition:all 0.3s;"></span>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- MOBILE MENU -->
+<div id="mob-menu" class="fixed inset-0 z-40 flex flex-col" style="background:rgba(8,8,8,0.99);">
+  <div class="flex flex-col justify-center items-center flex-1 gap-8">
+    <a href="#about" class="mob-link font-cond font-900 text-6xl text-white uppercase tracking-widest hover:text-red-500 transition-colors" style="font-weight:900;">About</a>
+    <a href="#sports" class="mob-link font-cond font-900 text-6xl text-white uppercase tracking-widest hover:text-red-500 transition-colors" style="font-weight:900;">Sports</a>
+    <a href="#cappers" class="mob-link font-cond font-900 text-6xl text-white uppercase tracking-widest hover:text-red-500 transition-colors" style="font-weight:900;">Cappers</a>
+    <a href="#pricing" class="mob-link font-cond font-900 text-6xl text-white uppercase tracking-widest hover:text-red-500 transition-colors" style="font-weight:900;">Join VIP</a>
+    <a href="https://whop.com/the-sweepers/the-sweepers?a=digitalartlab" target="_blank"
+       class="mt-6 btn-red px-10 py-4 rounded-lg font-cond font-800 text-xl text-white uppercase tracking-wider"
+       style="font-weight:800;">
+      Join VIP — $12.99/wk →
+    </a>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     HERO
+═══════════════════════════════════════ -->
+<section class="hero-bg flex flex-col justify-center pt-16 relative">
+
+  <!-- Background -->
+  <div class="absolute inset-0">
+    <img src="https://images.unsplash.com/photo-1546519638-68e109498ffc?w=1800&q=80&auto=format&fit=crop"
+         alt="Sports arena" class="w-full h-full object-cover opacity-15" />
+    <div class="absolute inset-0" style="background:linear-gradient(135deg, rgba(8,8,8,0.95) 0%, rgba(8,8,8,0.7) 50%, rgba(8,8,8,0.95) 100%);"></div>
+  </div>
+
+  <!-- Red diagonal stripe -->
+  <div class="red-stripe"></div>
+
+  <!-- Top red accent line -->
+  <div class="absolute top-0 left-0 right-0 h-1" style="background:var(--red);"></div>
+
+  <div class="max-w-7xl mx-auto px-5 py-24 relative z-10">
+    <div class="grid lg:grid-cols-2 gap-16 items-center">
+
+      <!-- LEFT: Hero copy -->
+      <div>
+        <!-- Badge -->
+        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6" style="background:rgba(232,21,27,0.12); border:1px solid rgba(232,21,27,0.3);">
+          <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+          <span class="font-cond font-700 text-xs uppercase tracking-widest" style="color:#f87171; font-weight:700;">Live Picks Dropping Daily</span>
+        </div>
+
+        <h1 class="font-cond leading-none mb-6" style="font-size:clamp(4rem,9vw,8.5rem); font-weight:900; line-height:0.88;">
+          <span class="text-white">WE DON'T</span><br/>
+          <span class="text-white">CHASE.</span><br/>
+          <span style="color:var(--red);">WE SWEEP.</span>
+        </h1>
+
+        <p class="text-gray-400 max-w-md mb-8 leading-relaxed" style="font-size:1.1rem;">
+          HoodRich & BDunk — the dynamic duo beating Vegas every day. Expert picks across NFL, NBA, NHL, MLB, and soccer. Thousands of winners. One community.
+        </p>
+
+        <!-- CTA group -->
+        <div class="flex flex-wrap gap-4 mb-12">
+          <a href="https://whop.com/the-sweepers/the-sweepers?a=digitalartlab" target="_blank"
+             class="btn-red inline-flex items-center gap-2 px-8 py-4 rounded-lg font-cond font-800 text-lg text-white uppercase tracking-wider"
+             style="font-weight:800; letter-spacing:0.05em;">
+            Join VIP — $12.99/wk
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+          <a href="https://whop.com/the-sweepers/the-sweepers-free-access?a=digitalartlab" target="_blank"
+             class="inline-flex items-center gap-2 px-8 py-4 rounded-lg font-cond font-700 text-lg text-white border border-gray-700 hover:border-gray-500 transition-all uppercase tracking-wider"
+             style="font-weight:700; letter-spacing:0.05em;">
+            Free Access
+          </a>
+        </div>
+
+        <!-- Social proof numbers -->
+        <div class="flex flex-wrap gap-8">
+          <div>
+            <div class="font-cond font-900 text-4xl text-white" style="font-weight:900;">1,000s</div>
+            <div class="font-cond text-xs uppercase tracking-widest mt-1" style="color:var(--text-dim); letter-spacing:0.15em;">Active Members</div>
+          </div>
+          <div class="w-px" style="background:var(--border);"></div>
+          <div>
+            <div class="font-cond font-900 text-4xl text-white" style="font-weight:900;">Daily</div>
+            <div class="font-cond text-xs uppercase tracking-widest mt-1" style="color:var(--text-dim); letter-spacing:0.15em;">Expert Picks</div>
+          </div>
+          <div class="w-px" style="background:var(--border);"></div>
+          <div>
+            <div class="font-cond font-900 text-4xl" style="color:var(--red); font-weight:900;">5+</div>
+            <div class="font-cond text-xs uppercase tracking-widest mt-1" style="color:var(--text-dim); letter-spacing:0.15em;">Elite Cappers</div>
+          </div>
+          <div class="w-px" style="background:var(--border);"></div>
+          <div>
+            <div class="font-cond font-900 text-4xl text-white" style="font-weight:900;">Free</div>
+            <div class="font-cond text-xs uppercase tracking-widest mt-1" style="color:var(--text-dim); letter-spacing:0.15em;">To Start</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: Live picks feed -->
+      <div class="hidden lg:block">
+        <div class="rounded-2xl overflow-hidden" style="background:var(--surface); border:1px solid rgba(232,21,27,0.2);">
+          <!-- Header -->
+          <div class="flex items-center justify-between px-5 py-4" style="background:rgba(232,21,27,0.08); border-bottom:1px solid rgba(232,21,27,0.15);">
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+              <span class="font-cond font-700 text-sm uppercase tracking-wider" style="font-weight:700; color:var(--red);">Live Pick Feed</span>
+            </div>
+            <span class="font-cond text-xs text-gray-600 uppercase tracking-wider">March 26, 2026</span>
+          </div>
+
+          <!-- Picks list -->
+          <div class="p-4 space-y-3">
+            <div class="pick-card rounded-lg p-4">
+              <div class="flex items-center justify-between mb-2">
+                <div class="flex items-center gap-2">
+                  <span class="font-cond font-700 text-sm uppercase" style="color:var(--red); font-weight:700;">🏀 NBA</span>
+                  <span class="font-cond text-sm text-gray-400">by HoodRich</span>
+                </div>
+                <span class="win-badge text-xs font-cond font-700 px-2 py-0.5 rounded" style="font-weight:700;">✓ WIN +$340</span>
+              </div>
+              <div class="font-cond font-700 text-white text-base" style="font-weight:700;">Lakers ML -115 · Moneyline</div>
+              <div class="text-xs text-gray-500 mt-1" style="font-family:'Barlow',sans-serif;">"Strong defensive matchup. Lakers by double-digits tonight."</div>
+            </div>
+
+            <div class="pick-card rounded-lg p-4">
+              <div class="flex items-center justify-between mb-2">
+                <div class="flex items-center gap-2">
+                  <span class="font-cond font-700 text-sm uppercase" style="color:var(--red); font-weight:700;">🏈 NFL</span>
+                  <span class="font-cond text-sm text-gray-400">by BDunk</span>
+                </div>
+                <span class="win-badge text-xs font-cond font-700 px-2 py-0.5 rounded" style="font-weight:700;">✓ WIN +$520</span>
+              </div>
+              <div class="font-cond font-700 text-white text-base" style="font-weight:700;">Chiefs -4.5 ATS · Spread</div>
+              <div class="text-xs text-gray-500 mt-1" style="font-family:'Barlow',sans-serif;">"Home field matters. Chiefs cover easily at Arrowhead."</div>
+            </div>
+
+            <div class="pick-card rounded-lg p-4">
+              <div class="flex items-center justify-between mb-2">
+                <div class="flex items-center gap-2">
+                  <span class="font-cond font-700 text-sm uppercase" style="color:var(--red); font-weight:700;">⚾ MLB</span>
+                  <span class="font-cond text-sm text-gray-400">by Chef</span>
+                </div>
+                <span class="win-badge text-xs font-cond font-700 px-2 py-0.5 rounded" style="font-weight:700;">✓ WIN +$290</span>
+              </div>
+              <div class="font-cond font-700 text-white text-base" style="font-weight:700;">Over 8.5 Runs -110 · Total</div>
+              <div class="text-xs text-gray-500 mt-1" style="font-family:'Barlow',sans-serif;">"Both bullpens shaky. Wind blowing out at Wrigley."</div>
+            </div>
+
+            <div class="pick-card rounded-lg p-4">
+              <div class="flex items-center justify-between mb-2">
+                <div class="flex items-center gap-2">
+                  <span class="font-cond font-700 text-sm uppercase" style="color:var(--red); font-weight:700;">🏒 NHL</span>
+                  <span class="font-cond text-sm text-gray-400">by CK</span>
+                </div>
+                <span class="loss-badge text-xs font-cond font-700 px-2 py-0.5 rounded" style="font-weight:700;">L -$130</span>
+              </div>
+              <div class="font-cond font-700 text-white text-base" style="font-weight:700;">Bruins Puck Line -1.5 +175</div>
+              <div class="text-xs text-gray-500 mt-1" style="font-family:'Barlow',sans-serif;">"High-value dog with strong goaltending matchup."</div>
+            </div>
+
+            <div class="pick-card rounded-lg p-4">
+              <div class="flex items-center justify-between mb-2">
+                <div class="flex items-center gap-2">
+                  <span class="font-cond font-700 text-sm uppercase" style="color:var(--red); font-weight:700;">⚽ MLS</span>
+                  <span class="font-cond text-sm text-gray-400">by CK</span>
+                </div>
+                <span class="win-badge text-xs font-cond font-700 px-2 py-0.5 rounded" style="font-weight:700;">✓ WIN +$410</span>
+              </div>
+              <div class="font-cond font-700 text-white text-base" style="font-weight:700;">LAFC Draw No Bet +140</div>
+              <div class="text-xs text-gray-500 mt-1" style="font-family:'Barlow',sans-serif;">"Protected bet with high value on LAFC at home."</div>
+            </div>
+          </div>
+
+          <div class="px-5 py-4 text-center" style="border-top:1px solid var(--border);">
+            <a href="https://whop.com/the-sweepers/the-sweepers?a=digitalartlab" target="_blank"
+               class="font-cond font-700 text-sm uppercase tracking-wider" style="color:var(--red); font-weight:700;">
+              Get Full VIP Access → $12.99/wk
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom diagonal -->
+  <div class="relative h-16 w-full mt-4">
+    <div class="absolute inset-0" style="background:var(--surface); clip-path:polygon(0 100%, 100% 0, 100% 100%);"></div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     TICKER STRIP
+═══════════════════════════════════════ -->
+<div class="py-3 overflow-hidden" style="background:var(--red);">
+  <div class="flex whitespace-nowrap">
+    <div class="sweep-ticker flex items-center gap-10 px-6">
+      <span class="font-cond font-700 text-sm uppercase tracking-widest text-white" style="font-weight:700;">🧹 We Don't Chase · We Sweep</span>
+      <span class="text-white opacity-50">•</span>
+      <span class="font-cond font-700 text-sm uppercase tracking-widest text-white" style="font-weight:700;">NFL · NBA · NHL · MLB · Soccer</span>
+      <span class="text-white opacity-50">•</span>
+      <span class="font-cond font-700 text-sm uppercase tracking-widest text-white" style="font-weight:700;">Moneylines · Spreads · Props · Parlays</span>
+      <span class="text-white opacity-50">•</span>
+      <span class="font-cond font-700 text-sm uppercase tracking-widest text-white" style="font-weight:700;">HoodRich & BDunk · Est. 2023</span>
+      <span class="text-white opacity-50">•</span>
+      <span class="font-cond font-700 text-sm uppercase tracking-widest text-white" style="font-weight:700;">In-Play Bets · Daily Plays</span>
+      <span class="text-white opacity-50">•</span>
+      <span class="font-cond font-700 text-sm uppercase tracking-widest text-white" style="font-weight:700;">$12.99/wk VIP Access</span>
+      <span class="text-white opacity-50">•</span>
+      <!-- Duplicate -->
+      <span class="font-cond font-700 text-sm uppercase tracking-widest text-white" style="font-weight:700;">🧹 We Don't Chase · We Sweep</span>
+      <span class="text-white opacity-50">•</span>
+      <span class="font-cond font-700 text-sm uppercase tracking-widest text-white" style="font-weight:700;">NFL · NBA · NHL · MLB · Soccer</span>
+      <span class="text-white opacity-50">•</span>
+      <span class="font-cond font-700 text-sm uppercase tracking-widest text-white" style="font-weight:700;">Moneylines · Spreads · Props · Parlays</span>
+      <span class="text-white opacity-50">•</span>
+      <span class="font-cond font-700 text-sm uppercase tracking-widest text-white" style="font-weight:700;">HoodRich & BDunk · Est. 2023</span>
+      <span class="text-white opacity-50">•</span>
+      <span class="font-cond font-700 text-sm uppercase tracking-widest text-white" style="font-weight:700;">In-Play Bets · Daily Plays</span>
+      <span class="text-white opacity-50">•</span>
+      <span class="font-cond font-700 text-sm uppercase tracking-widest text-white" style="font-weight:700;">$12.99/wk VIP Access</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     ABOUT SECTION
+═══════════════════════════════════════ -->
+<section id="about" class="py-24" style="background:var(--surface);">
+  <div class="max-w-7xl mx-auto px-5">
+    <div class="grid lg:grid-cols-2 gap-16 items-center">
+
+      <!-- Image -->
+      <div class="relative">
+        <img src="https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=800&q=80&auto=format&fit=crop"
+             alt="Sports betting analytics" class="rounded-2xl w-full h-[480px] object-cover opacity-80" />
+        <!-- Red corner accent -->
+        <div class="absolute top-0 left-0 w-16 h-16 rounded-tl-2xl" style="background:var(--red); opacity:0.6; z-index:-1; transform:translate(-6px,-6px);"></div>
+        <div class="absolute bottom-0 right-0 w-16 h-16 rounded-br-2xl" style="background:var(--red); opacity:0.4; z-index:-1; transform:translate(6px,6px);"></div>
+
+        <!-- Floating stat -->
+        <div class="absolute -bottom-6 -right-6 p-5 rounded-xl" style="background:var(--surface); border:1px solid rgba(232,21,27,0.3); box-shadow:0 10px 40px rgba(0,0,0,0.5);">
+          <div class="font-cond font-900 text-4xl" style="color:var(--red); font-weight:900;">Est.</div>
+          <div class="font-cond font-900 text-4xl text-white" style="font-weight:900;">2023</div>
+          <div class="font-cond text-xs text-gray-500 uppercase tracking-wider mt-1">Beating Vegas Daily</div>
+        </div>
+      </div>
+
+      <!-- Copy -->
+      <div>
+        <div class="flex items-center gap-3 mb-5">
+          <div class="h-1 w-12" style="background:var(--red);"></div>
+          <span class="font-cond font-700 text-xs uppercase tracking-widest" style="color:var(--red); font-weight:700;">Who We Are</span>
+        </div>
+        <h2 class="font-cond font-900 leading-none mb-6" style="font-size:clamp(3rem,6vw,5rem); font-weight:900;">
+          THE DYNAMIC DUO<br/>
+          <span class="red-underline">CHANGING THE GAME</span>
+        </h2>
+        <p class="text-gray-400 leading-relaxed mb-6" style="font-size:1.05rem;">
+          We're <strong class="text-white">HoodRich</strong> and <strong class="text-white">BDunk</strong> — two sharp sports bettors who decided to stop keeping their edge to ourselves. After years of beating Vegas on our own, we merged our followings and built The Sweepers: a community where bankrolls grow and life-changing wins happen every single week.
+        </p>
+        <p class="text-gray-400 leading-relaxed mb-8" style="font-size:1.05rem;">
+          We don't just hand you plays — we give you the analysis, the stats, the reasoning, and the mindset behind every single pick. When you understand <em>why</em> a play is good value, you stop following blindly and start becoming a sharper bettor yourself.
+        </p>
+
+        <!-- Key points -->
+        <div class="grid grid-cols-2 gap-4">
+          <div class="flex items-start gap-3 p-4 rounded-xl" style="background:var(--surface2);">
+            <span class="text-xl">🧠</span>
+            <div>
+              <div class="font-cond font-700 text-white text-sm uppercase" style="font-weight:700;">Sharp Analysis</div>
+              <div class="text-xs text-gray-500 mt-0.5">Every pick backed by stats, matchup data, and deep research</div>
+            </div>
+          </div>
+          <div class="flex items-start gap-3 p-4 rounded-xl" style="background:var(--surface2);">
+            <span class="text-xl">⚡</span>
+            <div>
+              <div class="font-cond font-700 text-white text-sm uppercase" style="font-weight:700;">In-Play Bets</div>
+              <div class="text-xs text-gray-500 mt-0.5">Live bets posted instantly during active games</div>
+            </div>
+          </div>
+          <div class="flex items-start gap-3 p-4 rounded-xl" style="background:var(--surface2);">
+            <span class="text-xl">👥</span>
+            <div>
+              <div class="font-cond font-700 text-white text-sm uppercase" style="font-weight:700;">Community First</div>
+              <div class="text-xs text-gray-500 mt-0.5">Members share their own picks in a dedicated channel</div>
+            </div>
+          </div>
+          <div class="flex items-start gap-3 p-4 rounded-xl" style="background:var(--surface2);">
+            <span class="text-xl">🏆</span>
+            <div>
+              <div class="font-cond font-700 text-white text-sm uppercase" style="font-weight:700;">Giveaways</div>
+              <div class="text-xs text-gray-500 mt-0.5">VIP members eligible for regular prize giveaways</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     THE CAPPERS
+═══════════════════════════════════════ -->
+<section id="cappers" class="py-24" style="background:var(--dark);">
+  <div class="max-w-7xl mx-auto px-5">
+    <div class="text-center mb-14">
+      <div class="flex items-center justify-center gap-3 mb-4">
+        <div class="h-px flex-1 max-w-20" style="background:var(--red);"></div>
+        <span class="font-cond font-700 text-xs uppercase tracking-widest" style="color:var(--red); font-weight:700;">The Team</span>
+        <div class="h-px flex-1 max-w-20" style="background:var(--red);"></div>
+      </div>
+      <h2 class="font-cond font-900 leading-none" style="font-size:clamp(3rem,6vw,5.5rem); font-weight:900;">
+        MEET THE <span class="red-underline">CAPPERS</span>
+      </h2>
+      <p class="text-gray-500 max-w-lg mx-auto mt-4">Each capper brings a specialized edge. Together, The Sweepers team covers more ground than any single handicapper ever could.</p>
+    </div>
+
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+      <!-- HoodRich -->
+      <div class="sport-card rounded-2xl overflow-hidden reveal">
+        <div class="relative h-52">
+          <img src="https://images.unsplash.com/photo-1531482615713-2afd69097998?w=600&q=80&auto=format&fit=crop"
+               alt="HoodRich" class="w-full h-full object-cover opacity-70" />
+          <div class="absolute inset-0" style="background:linear-gradient(to top, var(--surface) 0%, transparent 50%);"></div>
+          <div class="absolute top-4 right-4 px-3 py-1 rounded-full text-xs font-cond font-700 uppercase" style="background:var(--red); color:#fff; font-weight:700;">Co-Founder</div>
+        </div>
+        <div class="p-6">
+          <div class="font-cond font-900 text-2xl text-white mb-1" style="font-weight:900;">HoodRich</div>
+          <div class="font-cond text-sm uppercase tracking-wider mb-3" style="color:var(--red); font-weight:600;">NFL · NBA · MLB Specialist</div>
+          <p class="text-gray-500 text-sm leading-relaxed">The analytical half of the duo. HoodRich digs deep into matchup data, team trends, and situational stats before every pick. His NFL moneyline plays and NBA spreads are legendary in the community.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="team-badge text-gray-400">🏈 NFL</span>
+            <span class="team-badge text-gray-400">🏀 NBA</span>
+            <span class="team-badge text-gray-400">⚾ MLB</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- BDunk -->
+      <div class="sport-card rounded-2xl overflow-hidden reveal">
+        <div class="relative h-52">
+          <img src="https://images.unsplash.com/photo-1560272564-c83b66b1ad12?w=600&q=80&auto=format&fit=crop"
+               alt="BDunk" class="w-full h-full object-cover opacity-70" />
+          <div class="absolute inset-0" style="background:linear-gradient(to top, var(--surface) 0%, transparent 50%);"></div>
+          <div class="absolute top-4 right-4 px-3 py-1 rounded-full text-xs font-cond font-700 uppercase" style="background:var(--red); color:#fff; font-weight:700;">Co-Founder</div>
+        </div>
+        <div class="p-6">
+          <div class="font-cond font-900 text-2xl text-white mb-1" style="font-weight:900;">BDunk</div>
+          <div class="font-cond text-sm uppercase tracking-wider mb-3" style="color:var(--red); font-weight:600;">NHL · NBA · Parlay Expert</div>
+          <p class="text-gray-500 text-sm leading-relaxed">The high-conviction player. BDunk is known for his explosive parlay slips and in-play betting instincts. He watches every game live and will fire live bets the second he spots value mid-game — notifications on, always.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="team-badge text-gray-400">🏒 NHL</span>
+            <span class="team-badge text-gray-400">🏀 NBA</span>
+            <span class="team-badge text-gray-400">🎯 Parlays</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- CK -->
+      <div class="sport-card rounded-2xl overflow-hidden reveal">
+        <div class="relative h-52">
+          <img src="https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=600&q=80&auto=format&fit=crop"
+               alt="CK Soccer Specialist" class="w-full h-full object-cover opacity-70" />
+          <div class="absolute inset-0" style="background:linear-gradient(to top, var(--surface) 0%, transparent 50%);"></div>
+          <div class="absolute top-4 right-4 px-3 py-1 rounded-full text-xs font-cond font-700 uppercase" style="background:rgba(232,21,27,0.6); color:#fff; font-weight:700;">Soccer Expert</div>
+        </div>
+        <div class="p-6">
+          <div class="font-cond font-900 text-2xl text-white mb-1" style="font-weight:900;">CK</div>
+          <div class="font-cond text-sm uppercase tracking-wider mb-3" style="color:var(--red); font-weight:600;">Soccer / Global Football</div>
+          <p class="text-gray-500 text-sm leading-relaxed">The Sweepers' dedicated soccer specialist. CK covers Premier League, La Liga, Serie A, Champions League, MLS and more. His advanced soccer metrics and deep tactical knowledge make his plays some of the sharpest in the group.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="team-badge text-gray-400">⚽ EPL</span>
+            <span class="team-badge text-gray-400">⚽ UCL</span>
+            <span class="team-badge text-gray-400">⚽ MLS</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chef -->
+      <div class="sport-card rounded-2xl overflow-hidden reveal">
+        <div class="relative h-52">
+          <img src="https://images.unsplash.com/photo-1509281373149-e957c6296406?w=600&q=80&auto=format&fit=crop"
+               alt="Chef" class="w-full h-full object-cover opacity-70" />
+          <div class="absolute inset-0" style="background:linear-gradient(to top, var(--surface) 0%, transparent 50%);"></div>
+          <div class="absolute top-4 right-4 px-3 py-1 rounded-full text-xs font-cond font-700 uppercase" style="background:rgba(232,21,27,0.6); color:#fff; font-weight:700;">All-Sport</div>
+        </div>
+        <div class="p-6">
+          <div class="font-cond font-900 text-2xl text-white mb-1" style="font-weight:900;">Chef</div>
+          <div class="font-cond text-sm uppercase tracking-wider mb-3" style="color:var(--red); font-weight:600;">All-Sport Generalist</div>
+          <p class="text-gray-500 text-sm leading-relaxed">Chef does exactly what his name implies — cooks across every sport. Whether it's a primetime NFL game or a Wednesday night NBA back-to-back, Chef finds value where others don't bother looking. Versatile, consistent, dangerous.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="team-badge text-gray-400">🏈 NFL</span>
+            <span class="team-badge text-gray-400">🏀 NBA</span>
+            <span class="team-badge text-gray-400">⚾ MLB</span>
+            <span class="team-badge text-gray-400">🏒 NHL</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hips -->
+      <div class="sport-card rounded-2xl overflow-hidden reveal">
+        <div class="relative h-52">
+          <img src="https://images.unsplash.com/photo-1518611012118-696072aa579a?w=600&q=80&auto=format&fit=crop"
+               alt="Hips Lottos" class="w-full h-full object-cover opacity-70" />
+          <div class="absolute inset-0" style="background:linear-gradient(to top, var(--surface) 0%, transparent 50%);"></div>
+          <div class="absolute top-4 right-4 px-3 py-1 rounded-full text-xs font-cond font-700 uppercase" style="background:rgba(232,21,27,0.6); color:#fff; font-weight:700;">Lotto Expert</div>
+        </div>
+        <div class="p-6">
+          <div class="font-cond font-900 text-2xl text-white mb-1" style="font-weight:900;">Hips</div>
+          <div class="font-cond text-sm uppercase tracking-wider mb-3" style="color:var(--red); font-weight:600;">Lotto / Prop Specialist</div>
+          <p class="text-gray-500 text-sm leading-relaxed">Hips handles the lotto and player prop plays — the high-risk, high-reward corners of the market. With a sharp eye for misrated props and undervalued parlays, Hips has delivered some of the biggest wins in Sweepers history.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="team-badge text-gray-400">🎰 Lottos</span>
+            <span class="team-badge text-gray-400">🎯 Player Props</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Community Capper -->
+      <div class="sport-card rounded-2xl overflow-hidden reveal" style="background:rgba(232,21,27,0.05); border-color:rgba(232,21,27,0.2);">
+        <div class="relative h-52 flex items-center justify-center" style="background:rgba(232,21,27,0.08);">
+          <div class="text-center">
+            <div class="text-6xl mb-3">👥</div>
+            <div class="font-cond font-700 text-white text-sm uppercase tracking-wider" style="font-weight:700;">Community Channel</div>
+          </div>
+        </div>
+        <div class="p-6">
+          <div class="font-cond font-900 text-2xl text-white mb-1" style="font-weight:900;">Subscriber Bets</div>
+          <div class="font-cond text-sm uppercase tracking-wider mb-3" style="color:var(--red); font-weight:600;">You're the Capper</div>
+          <p class="text-gray-500 text-sm leading-relaxed">Every VIP member gets access to a dedicated Telegram channel to post their own picks and plays for the community to tail. The Sweepers community is packed with sharp bettors — and you might just be one of them.</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="team-badge text-gray-400">📲 Telegram</span>
+            <span class="team-badge text-gray-400">🏆 Community</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     SPORTS COVERED
+═══════════════════════════════════════ -->
+<section id="sports" class="py-24" style="background:var(--surface);">
+  <div class="max-w-7xl mx-auto px-5">
+    <div class="text-center mb-14">
+      <div class="flex items-center justify-center gap-3 mb-4">
+        <div class="h-px flex-1 max-w-20" style="background:var(--red);"></div>
+        <span class="font-cond font-700 text-xs uppercase tracking-widest" style="color:var(--red); font-weight:700;">Coverage</span>
+        <div class="h-px flex-1 max-w-20" style="background:var(--red);"></div>
+      </div>
+      <h2 class="font-cond font-900 leading-none" style="font-size:clamp(3rem,6vw,5.5rem); font-weight:900;">
+        EVERY SPORT.<br/>
+        <span style="color:var(--red);">EVERY DAY.</span>
+      </h2>
+    </div>
+
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+      <!-- NFL -->
+      <div class="relative rounded-2xl overflow-hidden h-56 group sport-card border-0 reveal">
+        <img src="https://images.unsplash.com/photo-1570498839593-e565b39455fc?w=700&q=80&auto=format&fit=crop"
+             alt="NFL Football" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-60" />
+        <div class="absolute inset-0 flex flex-col justify-end p-6" style="background:linear-gradient(to top, rgba(8,8,8,0.95) 0%, transparent 55%);">
+          <div class="font-cond font-900 text-4xl text-white mb-1" style="font-weight:900;">🏈 NFL</div>
+          <p class="text-xs text-gray-400">Spreads, moneylines, props, totals, same game parlays — full weekly coverage from Week 1 through the Super Bowl.</p>
+        </div>
+      </div>
+
+      <!-- NBA -->
+      <div class="relative rounded-2xl overflow-hidden h-56 group sport-card border-0 reveal">
+        <img src="https://images.unsplash.com/photo-1546519638-68e109498ffc?w=700&q=80&auto=format&fit=crop"
+             alt="NBA Basketball" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-60" />
+        <div class="absolute inset-0 flex flex-col justify-end p-6" style="background:linear-gradient(to top, rgba(8,8,8,0.95) 0%, transparent 55%);">
+          <div class="font-cond font-900 text-4xl text-white mb-1" style="font-weight:900;">🏀 NBA</div>
+          <p class="text-xs text-gray-400">Daily NBA action covered from tip-off to closing buzzer. Player props, totals, and spread plays seven nights a week.</p>
+        </div>
+      </div>
+
+      <!-- MLB -->
+      <div class="relative rounded-2xl overflow-hidden h-56 group sport-card border-0 reveal">
+        <img src="https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=700&q=80&auto=format&fit=crop"
+             alt="MLB Baseball" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-60" />
+        <div class="absolute inset-0 flex flex-col justify-end p-6" style="background:linear-gradient(to top, rgba(8,8,8,0.95) 0%, transparent 55%);">
+          <div class="font-cond font-900 text-4xl text-white mb-1" style="font-weight:900;">⚾ MLB</div>
+          <p class="text-xs text-gray-400">America's pastime meets sharp handicapping. Run lines, first-5-inning bets, and pitcher prop plays all season long.</p>
+        </div>
+      </div>
+
+      <!-- NHL -->
+      <div class="relative rounded-2xl overflow-hidden h-56 group sport-card border-0 reveal">
+        <img src="https://images.unsplash.com/photo-1607434472257-d9f8e57a643d?w=700&q=80&auto=format&fit=crop"
+             alt="NHL Hockey" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-60" />
+        <div class="absolute inset-0 flex flex-col justify-end p-6" style="background:linear-gradient(to top, rgba(8,8,8,0.95) 0%, transparent 55%);">
+          <div class="font-cond font-900 text-4xl text-white mb-1" style="font-weight:900;">🏒 NHL</div>
+          <p class="text-xs text-gray-400">Puck lines, goal totals, and moneylines on the NHL's most value-rich matchups. BDunk's specialty — don't miss his picks.</p>
+        </div>
+      </div>
+
+      <!-- Soccer -->
+      <div class="relative rounded-2xl overflow-hidden h-56 group sport-card border-0 reveal">
+        <img src="https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=700&q=80&auto=format&fit=crop"
+             alt="Soccer Football" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-60" />
+        <div class="absolute inset-0 flex flex-col justify-end p-6" style="background:linear-gradient(to top, rgba(8,8,8,0.95) 0%, transparent 55%);">
+          <div class="font-cond font-900 text-4xl text-white mb-1" style="font-weight:900;">⚽ Soccer</div>
+          <p class="text-xs text-gray-400">Global coverage — EPL, La Liga, UCL, MLS, Serie A and more. CK's soccer expertise sets The Sweepers apart in this market.</p>
+        </div>
+      </div>
+
+      <!-- WNBA & More -->
+      <div class="relative rounded-2xl overflow-hidden h-56 group sport-card border-0 reveal">
+        <img src="https://images.unsplash.com/photo-1551958219-acbc57e7a6e6?w=700&q=80&auto=format&fit=crop"
+             alt="WNBA and more" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-60" />
+        <div class="absolute inset-0 flex flex-col justify-end p-6" style="background:linear-gradient(to top, rgba(8,8,8,0.95) 0%, transparent 55%);">
+          <div class="font-cond font-900 text-4xl text-white mb-1" style="font-weight:900;">+ More</div>
+          <p class="text-xs text-gray-400">WNBA (via Sham), player props, lotto plays (via Hips), college sports when value is there. Always expanding coverage.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     HOW IT WORKS
+═══════════════════════════════════════ -->
+<section class="py-24" style="background:var(--dark);">
+  <div class="max-w-5xl mx-auto px-5">
+    <div class="text-center mb-14">
+      <h2 class="font-cond font-900 leading-none" style="font-size:clamp(3rem,6vw,5rem); font-weight:900;">
+        HOW THE<br/>
+        <span style="color:var(--red);">SWEEP WORKS</span>
+      </h2>
+    </div>
+
+    <div class="grid md:grid-cols-4 gap-0">
+
+      <div class="text-center p-6 md:p-8 relative">
+        <div class="w-16 h-16 rounded-full mx-auto mb-5 flex items-center justify-center font-cond font-900 text-2xl text-white" style="background:var(--red); font-weight:900;">1</div>
+        <!-- connector -->
+        <div class="hidden md:block absolute top-[calc(32px+1.5rem)] left-[calc(50%+32px)] right-0 h-px" style="background:linear-gradient(90deg,rgba(232,21,27,0.5),transparent);"></div>
+        <h3 class="font-cond font-800 text-lg text-white uppercase mb-2" style="font-weight:800;">Join the Community</h3>
+        <p class="text-xs text-gray-500 leading-relaxed">Sign up for free or upgrade to VIP. Access the Telegram channel instantly after payment through Whop.</p>
+      </div>
+
+      <div class="text-center p-6 md:p-8 relative">
+        <div class="w-16 h-16 rounded-full mx-auto mb-5 flex items-center justify-center font-cond font-900 text-2xl text-white" style="background:var(--red); font-weight:900;">2</div>
+        <div class="hidden md:block absolute top-[calc(32px+1.5rem)] left-[calc(50%+32px)] right-0 h-px" style="background:linear-gradient(90deg,rgba(232,21,27,0.5),transparent);"></div>
+        <h3 class="font-cond font-800 text-lg text-white uppercase mb-2" style="font-weight:800;">Read the Analysis</h3>
+        <p class="text-xs text-gray-500 leading-relaxed">Every pick comes with in-depth stats, matchup data, and the full reasoning. You're never betting blind.</p>
+      </div>
+
+      <div class="text-center p-6 md:p-8 relative">
+        <div class="w-16 h-16 rounded-full mx-auto mb-5 flex items-center justify-center font-cond font-900 text-2xl text-white" style="background:var(--red); font-weight:900;">3</div>
+        <div class="hidden md:block absolute top-[calc(32px+1.5rem)] left-[calc(50%+32px)] right-0 h-px" style="background:linear-gradient(90deg,rgba(232,21,27,0.5),transparent);"></div>
+        <h3 class="font-cond font-800 text-lg text-white uppercase mb-2" style="font-weight:800;">Tail the Play</h3>
+        <p class="text-xs text-gray-500 leading-relaxed">Place your bet using your preferred sportsbook. The cappers check multiple books for the best odds before posting.</p>
+      </div>
+
+      <div class="text-center p-6 md:p-8">
+        <div class="w-16 h-16 rounded-full mx-auto mb-5 flex items-center justify-center font-cond font-900 text-2xl text-white" style="background:var(--red); font-weight:900;">4</div>
+        <h3 class="font-cond font-800 text-lg text-white uppercase mb-2" style="font-weight:800;">Cash the Ticket</h3>
+        <p class="text-xs text-gray-500 leading-relaxed">Watch the game. Celebrate the win. Share your slip in the community — and watch the bankroll grow.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     BET TYPES BREAKDOWN
+═══════════════════════════════════════ -->
+<section class="py-24" style="background:var(--surface);">
+  <div class="max-w-7xl mx-auto px-5">
+    <div class="grid lg:grid-cols-2 gap-16 items-center">
+
+      <div>
+        <div class="flex items-center gap-3 mb-5">
+          <div class="h-1 w-12" style="background:var(--red);"></div>
+          <span class="font-cond font-700 text-xs uppercase tracking-widest" style="color:var(--red); font-weight:700;">Bet Types</span>
+        </div>
+        <h2 class="font-cond font-900 leading-none mb-6" style="font-size:clamp(2.5rem,5vw,4.5rem); font-weight:900;">
+          EVERY TYPE<br/>
+          OF <span style="color:var(--red);">PLAY.</span>
+        </h2>
+        <p class="text-gray-400 leading-relaxed mb-8">
+          The Sweepers aren't locked into one style. They find value wherever it lives — whether that's a simple moneyline, a complex same-game parlay, or a high-risk prop play that others sleep on.
+        </p>
+
+        <div class="space-y-4">
+          <div class="p-4 rounded-xl flex items-start gap-4" style="background:var(--surface2); border:1px solid var(--border);">
+            <div class="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 text-xl" style="background:rgba(232,21,27,0.12);">💰</div>
+            <div>
+              <div class="font-cond font-800 text-white text-base uppercase mb-1" style="font-weight:800;">Moneyline Picks</div>
+              <div class="text-xs text-gray-500 leading-relaxed">Straight-up win/loss bets. HoodRich's bread and butter — finding undervalued underdogs and value favorites with high win probability.</div>
+            </div>
+          </div>
+          <div class="p-4 rounded-xl flex items-start gap-4" style="background:var(--surface2); border:1px solid var(--border);">
+            <div class="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 text-xl" style="background:rgba(232,21,27,0.12);">📊</div>
+            <div>
+              <div class="font-cond font-800 text-white text-base uppercase mb-1" style="font-weight:800;">Spread Bets (ATS)</div>
+              <div class="text-xs text-gray-500 leading-relaxed">Against-the-spread plays backed by advanced matchup data and situational analysis. The Sweepers love covering spreads in divisional matchups with clear momentum edges.</div>
+            </div>
+          </div>
+          <div class="p-4 rounded-xl flex items-start gap-4" style="background:var(--surface2); border:1px solid var(--border);">
+            <div class="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 text-xl" style="background:rgba(232,21,27,0.12);">🎯</div>
+            <div>
+              <div class="font-cond font-800 text-white text-base uppercase mb-1" style="font-weight:800;">Player Props</div>
+              <div class="text-xs text-gray-500 leading-relaxed">Individual player performance bets — points, assists, yards, strikeouts, shots. Props are where Hips and Chef consistently find the market's biggest inefficiencies.</div>
+            </div>
+          </div>
+          <div class="p-4 rounded-xl flex items-start gap-4" style="background:var(--surface2); border:1px solid var(--border);">
+            <div class="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 text-xl" style="background:rgba(232,21,27,0.12);">🎰</div>
+            <div>
+              <div class="font-cond font-800 text-white text-base uppercase mb-1" style="font-weight:800;">Parlays & SGPs</div>
+              <div class="text-xs text-gray-500 leading-relaxed">Multi-leg parlays and same-game parlays for the big-ticket wins. BDunk builds some of the most dialed slips in the game — responsible sizing, maximum edge.</div>
+            </div>
+          </div>
+          <div class="p-4 rounded-xl flex items-start gap-4" style="background:var(--surface2); border:1px solid var(--border);">
+            <div class="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 text-xl" style="background:rgba(232,21,27,0.12);">⚡</div>
+            <div>
+              <div class="font-cond font-800 text-white text-base uppercase mb-1" style="font-weight:800;">In-Play / Live Bets</div>
+              <div class="text-xs text-gray-500 leading-relaxed">Posted instantly during live games. The Sweepers watch the action and fire live plays the second the books offer value — keep notifications on at all times.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Image -->
+      <div class="relative">
+        <img src="https://images.unsplash.com/flagged/photo-1576020269481-b52e281dd4cc?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fHNwb3J0cyUyMGFuYWx5dGljc3xlbnwwfHwwfHx8MA%3D%3D"
+             alt="Sports betting analytics" class="rounded-2xl w-full h-[560px] object-cover opacity-75" />
+        <div class="absolute inset-0 rounded-2xl" style="background:linear-gradient(135deg, rgba(232,21,27,0.08), transparent);"></div>
+        <div class="absolute top-6 left-6 p-5 rounded-xl" style="background:rgba(8,8,8,0.95); border:1px solid rgba(232,21,27,0.3);">
+          <div class="font-cond text-xs uppercase tracking-widest mb-2" style="color:var(--red);">Weekly Record</div>
+          <div class="flex items-end gap-3">
+            <div>
+              <div class="font-cond font-900 text-4xl text-green-400" style="font-weight:900;">18W</div>
+              <div class="font-cond text-xs text-gray-500 uppercase">Wins</div>
+            </div>
+            <div class="text-gray-600 font-cond text-2xl mb-1">-</div>
+            <div>
+              <div class="font-cond font-900 text-4xl text-gray-400" style="font-weight:900;">7L</div>
+              <div class="font-cond text-xs text-gray-500 uppercase">Losses</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     PRICING
+═══════════════════════════════════════ -->
+<section id="pricing" class="py-24" style="background:var(--dark);">
+  <div class="max-w-4xl mx-auto px-5">
+    <div class="text-center mb-14">
+      <div class="flex items-center justify-center gap-3 mb-4">
+        <div class="h-px flex-1 max-w-20" style="background:var(--red);"></div>
+        <span class="font-cond font-700 text-xs uppercase tracking-widest" style="color:var(--red); font-weight:700;">Access</span>
+        <div class="h-px flex-1 max-w-20" style="background:var(--red);"></div>
+      </div>
+      <h2 class="font-cond font-900 leading-none" style="font-size:clamp(3rem,6vw,5rem); font-weight:900;">
+        CHOOSE YOUR<br/>
+        <span style="color:var(--red);">LEVEL</span>
+      </h2>
+      <p class="text-gray-500 max-w-md mx-auto mt-4">Start free and experience the community. When you're ready to access every play every day — go VIP.</p>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-6 max-w-3xl mx-auto">
+
+      <!-- Free -->
+      <div class="plan-card rounded-2xl p-8">
+        <div class="font-cond font-700 text-xs uppercase tracking-widest text-gray-500 mb-2" style="font-weight:700;">Free Tier</div>
+        <div class="font-cond font-900 text-6xl text-white mb-1" style="font-weight:900;">$0</div>
+        <div class="text-gray-500 text-sm mb-6">Free Community Access</div>
+        <div class="h-px mb-6" style="background:var(--border);"></div>
+        <ul class="space-y-3 mb-8">
+          <li class="flex items-start gap-3 text-sm text-gray-400">
+            <span class="text-green-400 font-700 mt-0.5" style="font-weight:700;">✓</span> Free community channel access
+          </li>
+          <li class="flex items-start gap-3 text-sm text-gray-400">
+            <span class="text-green-400 font-700 mt-0.5" style="font-weight:700;">✓</span> Select free picks posted publicly
+          </li>
+          <li class="flex items-start gap-3 text-sm text-gray-400">
+            <span class="text-green-400 font-700 mt-0.5" style="font-weight:700;">✓</span> Access to community chat
+          </li>
+          <li class="flex items-start gap-3 text-sm text-gray-400">
+            <span class="text-green-400 font-700 mt-0.5" style="font-weight:700;">✓</span> Giveaway eligibility
+          </li>
+          <li class="flex items-start gap-3 text-sm text-gray-500">
+            <span class="text-gray-700 font-700 mt-0.5" style="font-weight:700;">✗</span> <span class="text-gray-600">Full VIP picks feed</span>
+          </li>
+          <li class="flex items-start gap-3 text-sm text-gray-500">
+            <span class="text-gray-700 font-700 mt-0.5" style="font-weight:700;">✗</span> <span class="text-gray-600">In-play live bets</span>
+          </li>
+          <li class="flex items-start gap-3 text-sm text-gray-500">
+            <span class="text-gray-700 font-700 mt-0.5" style="font-weight:700;">✗</span> <span class="text-gray-600">Subscriber bets channel</span>
+          </li>
+        </ul>
+        <a href="https://whop.com/the-sweepers/the-sweepers-free-access?a=digitalartlab" target="_blank"
+           class="block text-center py-3.5 rounded-xl font-cond font-700 text-sm text-white border uppercase tracking-wider transition-all hover:border-gray-500"
+           style="border-color:var(--border); font-weight:700; letter-spacing:0.08em;">
+          Join Free
+        </a>
+      </div>
+
+      <!-- VIP -->
+      <div class="plan-card vip rounded-2xl p-8 relative overflow-visible">
+        <div class="absolute -top-3.5 left-1/2 -translate-x-1/2 px-5 py-1 rounded-full font-cond font-800 text-xs text-white uppercase tracking-widest" style="background:var(--red); font-weight:800; white-space:nowrap;">MOST POPULAR · BEAT THE BOOKS</div>
+        <div class="font-cond font-700 text-xs uppercase tracking-widest mb-2" style="color:var(--red); font-weight:700; letter-spacing:0.15em;">VIP Access</div>
+        <div class="flex items-end gap-1 mb-1">
+          <div class="font-cond font-900 text-6xl text-white" style="font-weight:900;">$12.99</div>
+          <div class="text-gray-500 text-sm mb-2">/week</div>
+        </div>
+        <div class="text-gray-500 text-sm mb-6">Full Sweepers VIP Membership</div>
+        <div class="h-px mb-6" style="background:rgba(232,21,27,0.2);"></div>
+        <ul class="space-y-3 mb-8">
+          <li class="flex items-start gap-3 text-sm text-gray-300">
+            <span class="font-700 mt-0.5" style="color:var(--red); font-weight:700;">✓</span> Everything in Free, plus:
+          </li>
+          <li class="flex items-start gap-3 text-sm text-gray-300">
+            <span class="font-700 mt-0.5" style="color:var(--red); font-weight:700;">✓</span> Full VIP picks from ALL cappers
+          </li>
+          <li class="flex items-start gap-3 text-sm text-gray-300">
+            <span class="font-700 mt-0.5" style="color:var(--red); font-weight:700;">✓</span> NFL, NBA, NHL, MLB, Soccer — all covered
+          </li>
+          <li class="flex items-start gap-3 text-sm text-gray-300">
+            <span class="font-700 mt-0.5" style="color:var(--red); font-weight:700;">✓</span> In-play live bet notifications
+          </li>
+          <li class="flex items-start gap-3 text-sm text-gray-300">
+            <span class="font-700 mt-0.5" style="color:var(--red); font-weight:700;">✓</span> Full per-pick analysis & stats
+          </li>
+          <li class="flex items-start gap-3 text-sm text-gray-300">
+            <span class="font-700 mt-0.5" style="color:var(--red); font-weight:700;">✓</span> Subscriber bets channel (post your own)
+          </li>
+          <li class="flex items-start gap-3 text-sm text-gray-300">
+            <span class="font-700 mt-0.5" style="color:var(--red); font-weight:700;">✓</span> VIP giveaway eligibility
+          </li>
+          <li class="flex items-start gap-3 text-sm text-gray-300">
+            <span class="font-700 mt-0.5" style="color:var(--red); font-weight:700;">✓</span> Access to all 3 Telegram chats
+          </li>
+        </ul>
+        <a href="https://whop.com/the-sweepers/the-sweepers?a=digitalartlab" target="_blank"
+           class="btn-red block text-center py-4 rounded-xl font-cond font-800 text-base text-white uppercase tracking-wider"
+           style="font-weight:800; letter-spacing:0.08em;">
+          Go VIP — $12.99/Week →
+        </a>
+        <p class="text-center text-xs text-gray-600 mt-3">Cancel anytime · Managed via Whop.com</p>
+      </div>
+
+    </div>
+
+    <!-- ROI callout -->
+    <div class="mt-10 p-6 rounded-2xl text-center" style="background:rgba(232,21,27,0.06); border:1px solid rgba(232,21,27,0.2);">
+      <div class="font-cond font-900 text-2xl text-white mb-2" style="font-weight:900;">$12.99/wk = Less than ONE losing parlay ticket.</div>
+      <p class="text-gray-500 text-sm">One winning bet pays for months of VIP. The Sweepers team is doing the research, finding the edge, and posting it daily. You just tail and cash.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     TESTIMONIALS
+═══════════════════════════════════════ -->
+<section class="py-24" style="background:var(--surface);">
+  <div class="max-w-7xl mx-auto px-5">
+    <div class="text-center mb-14">
+      <h2 class="font-cond font-900 leading-none" style="font-size:clamp(3rem,6vw,5rem); font-weight:900;">
+        THE COMMUNITY<br/>
+        <span style="color:var(--red);">IS CASHING.</span>
+      </h2>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-5">
+
+      <div class="p-6 rounded-2xl reveal" style="background:var(--surface2); border:1px solid var(--border);">
+        <div class="flex gap-1 mb-3"><span class="text-yellow-400 text-sm">★★★★★</span></div>
+        <p class="text-gray-300 text-sm leading-relaxed mb-4">"They are the real deal! They post winning plays everyday. You will definitely get a good return on investment and win hundreds. HoodRich and BDunk are different — they actually care about your bankroll."</p>
+        <div class="flex items-center gap-3 pt-3" style="border-top:1px solid var(--border);">
+          <div class="w-8 h-8 rounded-full flex items-center justify-center font-cond font-800 text-sm" style="background:var(--red); font-weight:800;">T</div>
+          <div>
+            <div class="font-cond font-700 text-white text-sm uppercase" style="font-weight:700;">Tyler R.</div>
+            <div class="font-cond text-xs text-gray-600 uppercase tracking-wider">Verified VIP Member</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-6 rounded-2xl reveal" style="background:var(--surface2); border:1px solid var(--border);">
+        <div class="flex gap-1 mb-3"><span class="text-yellow-400 text-sm">★★★★★</span></div>
+        <p class="text-gray-300 text-sm leading-relaxed mb-4">"I've been hearing pretty good reports on Hoodrich and BDunk — yall some blessings and yall are deeply appreciated man! The analysis they drop on every pick makes it so easy to understand why the play is good."</p>
+        <div class="flex items-center gap-3 pt-3" style="border-top:1px solid var(--border);">
+          <div class="w-8 h-8 rounded-full flex items-center justify-center font-cond font-800 text-sm" style="background:var(--red); font-weight:800;">D</div>
+          <div>
+            <div class="font-cond font-700 text-white text-sm uppercase" style="font-weight:700;">DeShawn M.</div>
+            <div class="font-cond text-xs text-gray-600 uppercase tracking-wider">Verified VIP Member</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-6 rounded-2xl reveal" style="background:var(--surface2); border:1px solid var(--border);">
+        <div class="flex gap-1 mb-3"><span class="text-yellow-400 text-sm">★★★★★</span></div>
+        <p class="text-gray-300 text-sm leading-relaxed mb-4">"Best sports betting community I've been in. The picks are sharp, the analysis is detailed, and the community is super active. CK's soccer plays alone are worth the VIP price every week."</p>
+        <div class="flex items-center gap-3 pt-3" style="border-top:1px solid var(--border);">
+          <div class="w-8 h-8 rounded-full flex items-center justify-center font-cond font-800 text-sm" style="background:var(--red); font-weight:800;">A</div>
+          <div>
+            <div class="font-cond font-700 text-white text-sm uppercase" style="font-weight:700;">Alex P.</div>
+            <div class="font-cond text-xs text-gray-600 uppercase tracking-wider">Verified VIP Member</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-6 rounded-2xl reveal" style="background:var(--surface2); border:1px solid var(--border);">
+        <div class="flex gap-1 mb-3"><span class="text-yellow-400 text-sm">★★★★★</span></div>
+        <p class="text-gray-300 text-sm leading-relaxed mb-4">"BDunk's in-play bets are absolutely insane. One Wednesday night game, he posted two live bets that both hit. Had my notifications on and cashed both. This is the group to be in if you're serious about winning."</p>
+        <div class="flex items-center gap-3 pt-3" style="border-top:1px solid var(--border);">
+          <div class="w-8 h-8 rounded-full flex items-center justify-center font-cond font-800 text-sm" style="background:var(--red); font-weight:800;">M</div>
+          <div>
+            <div class="font-cond font-700 text-white text-sm uppercase" style="font-weight:700;">Marcus W.</div>
+            <div class="font-cond text-xs text-gray-600 uppercase tracking-wider">Verified VIP Member</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-6 rounded-2xl reveal" style="background:var(--surface2); border:1px solid var(--border);">
+        <div class="flex gap-1 mb-3"><span class="text-yellow-400 text-sm">★★★★★</span></div>
+        <p class="text-gray-300 text-sm leading-relaxed mb-4">"The Subscriber Bets channel is a game changer. I posted my own NFL pick last week and 40 people tailed it — it hit. This community is next level. HoodRich and BDunk built something really special here."</p>
+        <div class="flex items-center gap-3 pt-3" style="border-top:1px solid var(--border);">
+          <div class="w-8 h-8 rounded-full flex items-center justify-center font-cond font-800 text-sm" style="background:var(--red); font-weight:800;">J</div>
+          <div>
+            <div class="font-cond font-700 text-white text-sm uppercase" style="font-weight:700;">Jordan K.</div>
+            <div class="font-cond text-xs text-gray-600 uppercase tracking-wider">Verified VIP Member</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-6 rounded-2xl reveal" style="background:var(--surface2); border:1px solid var(--border);">
+        <div class="flex gap-1 mb-3"><span class="text-yellow-400 text-sm">★★★★★</span></div>
+        <p class="text-gray-300 text-sm leading-relaxed mb-4">"I was skeptical at first — I've been burned by other pick services. But The Sweepers actually show their work. Every pick has real reasoning behind it. Three weeks in and my bankroll is already up 40%."</p>
+        <div class="flex items-center gap-3 pt-3" style="border-top:1px solid var(--border);">
+          <div class="w-8 h-8 rounded-full flex items-center justify-center font-cond font-800 text-sm" style="background:var(--red); font-weight:800;">R</div>
+          <div>
+            <div class="font-cond font-700 text-white text-sm uppercase" style="font-weight:700;">Ryan C.</div>
+            <div class="font-cond text-xs text-gray-600 uppercase tracking-wider">Verified VIP Member</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     FAQ
+═══════════════════════════════════════ -->
+<section id="faq" class="py-24" style="background:var(--dark);">
+  <div class="max-w-3xl mx-auto px-5">
+    <div class="text-center mb-14">
+      <h2 class="font-cond font-900 leading-none" style="font-size:clamp(3rem,6vw,5rem); font-weight:900;">
+        YOUR <span style="color:var(--red);">QUESTIONS.</span><br/>
+        ANSWERED.
+      </h2>
+    </div>
+
+    <div class="space-y-3" id="faq-wrapper">
+
+      <div class="faq-item rounded-xl overflow-hidden" style="background:var(--surface); border:1px solid var(--border);">
+        <button class="faq-trigger w-full text-left px-6 py-5 flex items-center justify-between gap-4">
+          <span class="font-cond font-700 text-sm uppercase tracking-wide text-white" style="font-weight:700;">What exactly is The Sweepers?</span>
+          <span class="faq-icon flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center font-cond text-lg" style="background:rgba(232,21,27,0.15); color:var(--red);">+</span>
+        </button>
+        <div class="faq-body px-6">
+          <p class="text-sm leading-relaxed pb-5 text-gray-400">The Sweepers is a premium sports betting community founded by HoodRich and BDunk — two experienced sharp bettors who decided to share their edge. The community operates primarily through Telegram, where the team posts daily picks with full analysis across NFL, NBA, NHL, MLB, and soccer. Members also get to post their own picks in a dedicated community channel. VIP access is $12.99/week through Whop.com.</p>
+        </div>
+      </div>
+
+      <div class="faq-item rounded-xl overflow-hidden" style="background:var(--surface); border:1px solid var(--border);">
+        <button class="faq-trigger w-full text-left px-6 py-5 flex items-center justify-between gap-4">
+          <span class="font-cond font-700 text-sm uppercase tracking-wide text-white" style="font-weight:700;">What's the difference between Free and VIP?</span>
+          <span class="faq-icon flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center font-cond text-lg" style="background:rgba(232,21,27,0.15); color:var(--red);">+</span>
+        </button>
+        <div class="faq-body px-6">
+          <p class="text-sm leading-relaxed pb-5 text-gray-400">Free access gives you community chat access, select publicly posted plays, and giveaway eligibility. VIP ($12.99/week) unlocks the full picks feed from all cappers (HoodRich, BDunk, CK, Chef, Hips and more), in-play live bets posted in real time, the Subscriber Bets channel where you can post your own picks, access to all 3 Telegram chats, and enhanced giveaway eligibility. VIP is where the real edge lives.</p>
+        </div>
+      </div>
+
+      <div class="faq-item rounded-xl overflow-hidden" style="background:var(--surface); border:1px solid var(--border);">
+        <button class="faq-trigger w-full text-left px-6 py-5 flex items-center justify-between gap-4">
+          <span class="font-cond font-700 text-sm uppercase tracking-wide text-white" style="font-weight:700;">How are the picks delivered?</span>
+          <span class="faq-icon flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center font-cond text-lg" style="background:rgba(232,21,27,0.15); color:var(--red);">+</span>
+        </button>
+        <div class="faq-body px-6">
+          <p class="text-sm leading-relaxed pb-5 text-gray-400">All picks are delivered via Telegram — the world's most reliable messaging platform for real-time notifications. After joining on Whop, you'll receive an invitation link to The Sweepers' private Telegram channels. Turn on notifications for the VIP channel — especially for in-play bets, which are posted live during games and can expire quickly. The team checks multiple sportsbooks before posting to ensure you're getting the best available odds.</p>
+        </div>
+      </div>
+
+      <div class="faq-item rounded-xl overflow-hidden" style="background:var(--surface); border:1px solid var(--border);">
+        <button class="faq-trigger w-full text-left px-6 py-5 flex items-center justify-between gap-4">
+          <span class="font-cond font-700 text-sm uppercase tracking-wide text-white" style="font-weight:700;">What sports and leagues do The Sweepers cover?</span>
+          <span class="faq-icon flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center font-cond text-lg" style="background:rgba(232,21,27,0.15); color:var(--red);">+</span>
+        </button>
+        <div class="faq-body px-6">
+          <p class="text-sm leading-relaxed pb-5 text-gray-400">The Sweepers cover all major American sports leagues: NFL, NBA, NHL, and MLB throughout their respective seasons. CK provides dedicated soccer coverage across the Premier League, La Liga, Serie A, Champions League, and MLS. Hips posts lotto plays, and Sham covers the WNBA when in season. The team is always expanding its coverage — college sports and UFC picks appear when strong value is identified.</p>
+        </div>
+      </div>
+
+      <div class="faq-item rounded-xl overflow-hidden" style="background:var(--surface); border:1px solid var(--border);">
+        <button class="faq-trigger w-full text-left px-6 py-5 flex items-center justify-between gap-4">
+          <span class="font-cond font-700 text-sm uppercase tracking-wide text-white" style="font-weight:700;">Can I post my own picks in the community?</span>
+          <span class="faq-icon flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center font-cond text-lg" style="background:rgba(232,21,27,0.15); color:var(--red);">+</span>
+        </button>
+        <div class="faq-body px-6">
+          <p class="text-sm leading-relaxed pb-5 text-gray-400">Yes — VIP members get access to the dedicated Subscriber Bets channel, where any member can post their own picks and plays for others to tail. This is one of The Sweepers' most unique features. The community is packed with sharp bettors, and some of the most profitable plays in Sweepers history have come from the community channel. Your picks + the team's edge = a seriously powerful combination.</p>
+        </div>
+      </div>
+
+      <div class="faq-item rounded-xl overflow-hidden" style="background:var(--surface); border:1px solid var(--border);">
+        <button class="faq-trigger w-full text-left px-6 py-5 flex items-center justify-between gap-4">
+          <span class="font-cond font-700 text-sm uppercase tracking-wide text-white" style="font-weight:700;">What sportsbooks do The Sweepers recommend?</span>
+          <span class="faq-icon flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center font-cond text-lg" style="background:rgba(232,21,27,0.15); color:var(--red);">+</span>
+        </button>
+        <div class="faq-body px-6">
+          <p class="text-sm leading-relaxed pb-5 text-gray-400">The Sweepers are sportsbook-agnostic — they check all major legal sportsbooks before posting each pick to find the best available odds. They'll always include the recommended line and book alongside each play. Members are encouraged to have accounts on multiple books (DraftKings, FanDuel, BetMGM, Caesars, etc.) to ensure they can always get the posted line or better. Line shopping is one of the most overlooked edges in sports betting.</p>
+        </div>
+      </div>
+
+      <div class="faq-item rounded-xl overflow-hidden" style="background:var(--surface); border:1px solid var(--border);">
+        <button class="faq-trigger w-full text-left px-6 py-5 flex items-center justify-between gap-4">
+          <span class="font-cond font-700 text-sm uppercase tracking-wide text-white" style="font-weight:700;">Can I cancel my VIP membership anytime?</span>
+          <span class="faq-icon flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center font-cond text-lg" style="background:rgba(232,21,27,0.15); color:var(--red);">+</span>
+        </button>
+        <div class="faq-body px-6">
+          <p class="text-sm leading-relaxed pb-5 text-gray-400">Yes — The Sweepers VIP is a weekly subscription managed through Whop.com, and you can cancel at any time from your Whop dashboard. Your access continues until the end of the billing week you've already paid for. No long-term contracts, no cancellation fees. Sports betting is about value — if you ever feel the service isn't delivering, you're free to walk. But most members stay because the picks genuinely deliver.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     FINAL CTA
+═══════════════════════════════════════ -->
+<section class="py-32 relative overflow-hidden" style="background:var(--black);">
+  <div class="absolute inset-0">
+    <img src="https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=1600&q=80&auto=format&fit=crop"
+         alt="Sports stadium" class="w-full h-full object-cover opacity-12" />
+    <div class="absolute inset-0" style="background:linear-gradient(135deg, rgba(8,8,8,0.95) 0%, rgba(8,8,8,0.8) 50%, rgba(8,8,8,0.95) 100%);"></div>
+  </div>
+  <div class="absolute top-0 left-0 right-0 h-1" style="background:var(--red);"></div>
+  <div class="absolute bottom-0 left-0 right-0 h-1" style="background:var(--red);"></div>
+
+  <div class="max-w-4xl mx-auto px-5 text-center relative z-10">
+    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-8" style="background:rgba(232,21,27,0.1); border:1px solid rgba(232,21,27,0.3);">
+      <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+      <span class="font-cond font-700 text-xs uppercase tracking-widest" style="color:#f87171; font-weight:700;">Picks Dropping Right Now</span>
+    </div>
+    <h2 class="font-cond font-900 leading-none mb-6" style="font-size:clamp(4rem,9vw,8rem); font-weight:900;">
+      READY TO<br/>
+      <span style="color:var(--red);">CASH?</span>
+    </h2>
+    <p class="text-gray-400 max-w-lg mx-auto mb-10 leading-relaxed" style="font-size:1.05rem;">
+      Join thousands of bettors in The Sweepers community. HoodRich and BDunk are dropping picks every single day — the bankrolls are growing. Are you in?
+    </p>
+    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+      <a href="https://whop.com/the-sweepers/the-sweepers?a=digitalartlab" target="_blank"
+         class="btn-red inline-flex items-center justify-center gap-2 px-10 py-4 rounded-lg font-cond font-800 text-lg text-white uppercase tracking-wider"
+         style="font-weight:800; letter-spacing:0.06em;">
+        Join VIP — $12.99/Week
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+      <a href="https://whop.com/the-sweepers/the-sweepers-free-access?a=digitalartlab" target="_blank"
+         class="inline-flex items-center justify-center gap-2 px-10 py-4 rounded-lg font-cond font-700 text-lg text-white border border-gray-700 hover:border-gray-500 transition-all uppercase tracking-wider"
+         style="font-weight:700;">
+        Join Free First
+      </a>
+    </div>
+    <p class="text-xs text-gray-700 mt-6">Sports betting involves risk. Please bet responsibly and within your means.</p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     FOOTER
+═══════════════════════════════════════ -->
+<footer class="py-12" style="background:#050505; border-top:1px solid var(--border);">
+  <div class="max-w-7xl mx-auto px-5">
+    <div class="grid md:grid-cols-4 gap-10 mb-10">
+
+      <div class="md:col-span-1">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:var(--red);">
+            <span class="font-cond font-900 text-white text-base" style="font-weight:900;">🧹</span>
+          </div>
+          <div>
+            <div class="font-cond font-900 text-white text-sm tracking-wide" style="font-weight:900;">THE SWEEPERS</div>
+            <div class="font-cond text-xs" style="color:var(--red); letter-spacing:0.15em; font-weight:600;">BEAT THE BOOKS</div>
+          </div>
+        </div>
+        <p class="text-xs leading-relaxed text-gray-600">HoodRich & BDunk — the dynamic duo changing the game in sports betting. Est. 2023. Thousands of members. Daily picks. Real results.</p>
+      </div>
+
+      <div>
+        <div class="font-cond font-700 text-xs uppercase tracking-widest mb-4" style="color:var(--red); font-weight:700;">Access</div>
+        <ul class="space-y-2">
+          <li><a href="https://whop.com/the-sweepers/the-sweepers-free-access?a=digitalartlab" class="font-cond text-xs uppercase tracking-wider text-gray-600 hover:text-white transition-colors">Free Access</a></li>
+          <li><a href="https://whop.com/the-sweepers/the-sweepers?a=digitalartlab" class="font-cond text-xs uppercase tracking-wider text-gray-600 hover:text-white transition-colors">VIP — $12.99/wk</a></li>
+          <li><a href="https://whop.com/the-sweepers?a=digitalartlab" class="font-cond text-xs uppercase tracking-wider text-gray-600 hover:text-white transition-colors">Full Whop Page</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <div class="font-cond font-700 text-xs uppercase tracking-widest mb-4" style="color:var(--red); font-weight:700;">Sports</div>
+        <ul class="space-y-2">
+          <li><span class="font-cond text-xs uppercase tracking-wider text-gray-600">🏈 NFL</span></li>
+          <li><span class="font-cond text-xs uppercase tracking-wider text-gray-600">🏀 NBA</span></li>
+          <li><span class="font-cond text-xs uppercase tracking-wider text-gray-600">🏒 NHL</span></li>
+          <li><span class="font-cond text-xs uppercase tracking-wider text-gray-600">⚾ MLB</span></li>
+          <li><span class="font-cond text-xs uppercase tracking-wider text-gray-600">⚽ Soccer</span></li>
+        </ul>
+      </div>
+
+      <div>
+        <div class="font-cond font-700 text-xs uppercase tracking-widest mb-4" style="color:var(--red); font-weight:700;">The Team</div>
+        <ul class="space-y-2">
+          <li><span class="font-cond text-xs uppercase tracking-wider text-gray-600">HoodRich · NFL/NBA/MLB</span></li>
+          <li><span class="font-cond text-xs uppercase tracking-wider text-gray-600">BDunk · NHL/NBA/Parlays</span></li>
+          <li><span class="font-cond text-xs uppercase tracking-wider text-gray-600">CK · Soccer</span></li>
+          <li><span class="font-cond text-xs uppercase tracking-wider text-gray-600">Chef · All Sports</span></li>
+          <li><span class="font-cond text-xs uppercase tracking-wider text-gray-600">Hips · Lottos/Props</span></li>
+        </ul>
+      </div>
+
+    </div>
+
+    <div class="border-t pt-8 flex flex-col md:flex-row items-center justify-between gap-4" style="border-color:var(--border);">
+      <p class="font-cond text-xs text-gray-700 uppercase tracking-wider">© 2025 The Sweepers · Accessed via Whop.com · Affiliate: digitalartlab</p>
+      <p class="font-cond text-xs text-gray-700 uppercase tracking-wider">Bet Responsibly · 21+ Only</p>
+    </div>
+  </div>
+</footer>
+
+<!-- ═══════════════════════════════════════
+     JAVASCRIPT
+═══════════════════════════════════════ -->
+<script>
+  // ── NAV ──
+  const nav = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('solid', window.scrollY > 50);
+  });
+
+  // ── HAMBURGER ──
+  const hamBtn = document.getElementById('ham');
+  const mobMenu = document.getElementById('mob-menu');
+  const hbLines = hamBtn.querySelectorAll('.hb');
+  let isOpen = false;
+
+  hamBtn.addEventListener('click', () => {
+    isOpen = !isOpen;
+    if (isOpen) {
+      mobMenu.classList.add('open');
+      hbLines[0].style.transform = 'rotate(45deg) translateY(8px)';
+      hbLines[1].style.opacity = '0';
+      hbLines[2].style.transform = 'rotate(-45deg) translateY(-6px)';
+      hbLines[2].style.width = '24px';
+      document.body.style.overflow = 'hidden';
+    } else {
+      mobMenu.classList.remove('open');
+      hbLines[0].style.transform = '';
+      hbLines[1].style.opacity = '';
+      hbLines[2].style.transform = '';
+      hbLines[2].style.width = '';
+      document.body.style.overflow = '';
+    }
+  });
+
+  document.querySelectorAll('.mob-link').forEach(l => l.addEventListener('click', () => {
+    isOpen = false;
+    mobMenu.classList.remove('open');
+    hbLines[0].style.transform = '';
+    hbLines[1].style.opacity = '';
+    hbLines[2].style.transform = '';
+    hbLines[2].style.width = '';
+    document.body.style.overflow = '';
+  }));
+
+  // ── FAQ ──
+  document.querySelectorAll('.faq-trigger').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const item = btn.closest('.faq-item');
+      const body = item.querySelector('.faq-body');
+      const icon = item.querySelector('.faq-icon');
+      const open = item.classList.contains('open');
+
+      document.querySelectorAll('.faq-item').forEach(i => {
+        i.classList.remove('open');
+        i.querySelector('.faq-body').classList.remove('open');
+        i.querySelector('.faq-icon').textContent = '+';
+        i.querySelector('.faq-icon').style.transform = '';
+      });
+
+      if (!open) {
+        item.classList.add('open');
+        body.classList.add('open');
+        icon.textContent = '×';
+      }
+    });
+  });
+
+  // ── REVEAL ──
+  const ro = new IntersectionObserver(entries => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => e.target.classList.add('in'), i * 100);
+        ro.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.reveal').forEach(el => ro.observe(el));
+
+  // ── SMOOTH SCROLL ──
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      const t = document.querySelector(a.getAttribute('href'));
+      if (t) {
+        e.preventDefault();
+        window.scrollTo({ top: t.getBoundingClientRect().top + window.scrollY - 70, behavior: 'smooth' });
+      }
+    });
+  });
+</script>
+</body>
+</html>
